@@ -2,21 +2,37 @@
 // Key: ab904fc7fce97ee1d90e837958baa66b
 // URI: http://api.weatherstack.com/current
 
-const request = require('postman-request')
+// Map Box
+// Key: pk.eyJ1IjoiY2FsbGlweWdvdXMiLCJhIjoiY2s5andsZ2Q5MW16czNscDR6amdia242ZiJ9.Mf228tFEWVePSZTipf7yUg
+// URI: https://api.mapbox.com/geocoding/v5/mapbox.places/
 
-const url = 'http://api.weatherstack.com/current'
-const apiKey = 'ab904fc7fce97ee1d90e837958baa66b'
-const location = 'New York'
-const units = 'f'
-const apiRequest = (url + '?access_key=' + apiKey +'&query=' + location + '&units=' + units)
+const geocode = require('./utils/geocode')
+const forecast = require('./utils/forecast')
 
-/*const weather = */
-request({uri: apiRequest, json: true}, (error, response) => {
-    // let data = JSON.parse(response.body)
-    let data = response.body
 
-    console.log(`In ${data.location.name}, it is ${data.current.temperature} degrees out, but it feels more like ${data.current.feelslike}!`)
+// geocode('ny', (e, d) => forecast(d, console.log(e, d)))
 
-})
+// geocode('nj', (err, loc) => {
+//     forecast(loc, (e, r) => {e, r})
+// })
 
-// console.log(weather)
+const search = process.argv[2]
+
+    if (!search) {
+        return console.log('Please input a location!')
+    }
+    else {
+        geocode(search, (error, data) => {
+        if (error) {
+            return console.log(error)
+        }
+
+        forecast(data, (e, d) => {
+            if (e) {
+                return console.log(error)
+            }
+            console.log(data.location)
+            console.log(d.result())
+        })
+    })
+}
